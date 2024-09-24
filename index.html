@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запрошення</title>
+    <style>
+        body {
+            background-color: #f5f5dc; /* Бежевий фон */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .envelope {
+            position: relative;
+            width: 400px; /* Збільшено */
+            height: 250px; /* Збільшено */
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            transform-origin: top;
+            transition: transform 0.5s ease;
+        }
+
+        .letter {
+            position: absolute;
+            top: 90%; /* Опустили листок нижче */
+            left: 50%;
+            transform: translate(-50%, -50%) scaleY(0); /* Зменшено для анімації */
+            width: 360px; /* Збільшено */
+            height: 250px; /* Збільшено */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease, top 0.5s ease, transform 0.5s ease;
+            border: 2px solid transparent; /* Початковий контур */
+        }
+
+        .envelope.open .flap {
+            transform: rotateX(180deg);
+            animation: flapWiggle 0.2s forwards; /* Додана анімація */
+        }
+
+        @keyframes flapWiggle {
+            0% { transform: rotateX(0); }
+            50% { transform: rotateX(10deg); }
+            100% { transform: rotateX(0); }
+        }
+
+        .envelope.open .letter {
+            top: 50%; /* Зміщення при відкритті */
+            transform: translate(-50%, -50%) scaleY(1); /* Відкритий лист */
+            opacity: 1;
+            animation: unfold 0.5s forwards, fadeIn 0.5s forwards 0.5s; /* Анімація розкриття та затримка для тексту */
+            border: 2px solid black; /* Чорний контур після відкриття */
+        }
+
+        @keyframes unfold {
+            0% {
+                transform: translate(-50%, -50%) scaleY(0);
+            }
+            100% {
+                transform: translate(-50%, -50%) scaleY(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px; /* Розмір тексту */
+            color: #333;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .sticker {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px; /* Розмір наліпки */
+            height: 50px; /* Розмір наліпки */
+            background-color: #ff6666; /* Колір наліпки */
+            border-radius: 50%; /* Кругла наліпка */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .envelope.open .sticker {
+            transform: translate(-50%, -70%) rotate(45deg) scale(1.2); /* Наліпка зникає */
+            opacity: 0; /* Наліпка зникає */
+            animation: stickerBounce 0.5s forwards; /* Анімація для наліпки */
+        }
+
+        @keyframes stickerBounce {
+            0% { transform: translate(-50%, 0) rotate(0); }
+            50% { transform: translate(-50%, -10px) rotate(10deg); }
+            100% { transform: translate(-50%, 0) rotate(0); }
+        }
+
+        /* Підсказка */
+        .hint {
+        position: absolute;
+        top: 55%; /* Центруємо по вертикалі */
+        left: 70%; /* Встановлюємо праворуч від листа */
+        transform: translate(20px, -50%) scale(0); /* Початкова анімація */
+        width: 100px; /* Ширина підсказки */
+        height: 200px; /* Висота підсказки */
+        border-radius: 10px; /* Кутові округлення */
+        display: flex;
+        flex-direction: column; /* Вирівнювання елементів по вертикалі */
+        justify-content: flex-start; /* Вирівнювання на початку */
+        align-items: center; /* Центрування по горизонталі */
+        font-size: 16px;
+        color: #333;
+        opacity: 0; /* Непомітна спочатку */
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+
+        .envelope.open .hint {
+            transform: translate(20px, -50%) scale(1); /* Анімація виліту */
+            opacity: 1; /* Показати підсказку */
+            animation: hintFly 0.5s forwards; /* Анімація підсказки */
+        }
+
+        @keyframes hintFly {
+            0% {
+                transform: translate(20px, -50%) scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(20px, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="envelope" id="envelope">
+        <div class="flap"></div>
+        <div class="letter">
+            <div class="text" id="invitationText">
+                <strong>Шановний(а)</strong>,<br>
+                Ви запрошено на один цікавий захід!<br>
+                <strong>Час:</strong> 19:30<br>
+                <strong>Дата:</strong> 26.09<br>
+                <strong>Місце:</strong> Ахматової Анни 22<br>
+                <strong>Дрескод:</strong> Щось гарне, не спортивне та не супер класичне, зручний гарний наряд.
+            </div>
+        </div>
+        <div class="sticker" id="sticker">❤️</div> <!-- Наліпка -->
+        <div class="hint" id="hint">
+            <h1 style="font-size: 14px; margin: 0; background: rgba(0, 0, 0, 0.504);">Підсказка</h1> 
+            <img src="підсказка1.jpeg" alt="Містер і місіс Сміт" style="width: 150%; height: auto; border-radius: 10px;"> <!-- Зображення підсказки -->
+        </div>        
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+
+        envelope.addEventListener('click', function () {
+            envelope.classList.toggle('open');
+        });
+    </script>
+
+</body>
+</html>
